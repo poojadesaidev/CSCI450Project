@@ -42,13 +42,37 @@ All transactions are persisted in encrypted format (except serial number). The t
 ==============================================================================================
 
 References or reused code:
-	1)	Code for Socket Programming has been taken from : 
+	1)	Socket Programming : 
 	⁃	Brian “Beej Jorgensen” Hall - Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 	⁃	Stream Server - https://www.youtube.com/watch?v=cNdlrbZSkyQ&t=388s
 	⁃	Stream Client - https://www.youtube.com/watch?v=fmn-pRvNaho
 	⁃	UDP Server and Client - https://www.youtube.com/watch?v=uIanSvWou1M
 
-	2)	Make File Tutorial
+  Functions that use referenced or reused code:
+    1> client.cpp and monitor.cpp
+      1] createStreamClientSocket
+      2] sendRecieve
+
+    2> serverM.cpp 
+      1] createBindListenStrmSrvrWlcmngSocket
+      2] childFork
+      3] createUDPSocket
+      4] createUDPServerAddrHint
+      5] createUDPClientAddrHint
+      6] sendRequestToDatagramServer
+    
+    3> serverA.cpp, serverB.cpp serverC.cpp
+      1] createBindDatagramSocket
+
+  2) Sorted list in CPP :
+  - https://thispointer.com/c-how-to-sort-a-list-of-objects-with-custom-comparator-or-lambda-function/
+
+  Functions or structures that use referenced or reused code:
+    1> serverM.cpp, serverA.cpp, serverB.cpp and serverC.cpp
+      1] struct Transaction
+      2] sendRecieve
+
+	3)	Make File Tutorial
 	⁃	https://www.youtube.com/watch?v=_r7i5X0rXJk
 
 ==============================================================================================
@@ -65,3 +89,6 @@ Assumptions:
   “The main server received feedback from Server <i> using UDP over port <PORT_NUMBER>.”                            
   
   As per https://courses.uscden.net/d2l/le/22707/discussions/threads/47370/View, we are allowed to use either
+  5) Main Server Message : The following message is being used ater the Main Server generates TXLIST:
+  "The main server generated the transaction list file."
+  6) Error Messages : Error messages are liberally being used for all files in case of RunTime failures.

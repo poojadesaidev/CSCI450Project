@@ -14,6 +14,7 @@
 
 using namespace std;
 
+// REFERENCE : https://www.youtube.com/watch?v=fmn-pRvNaho and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 int createStreamClientSocket()
 {
   // Create a socket
@@ -44,6 +45,7 @@ int createStreamClientSocket()
   return stream_client_socket;
 }
 
+// REFERENCE : https://www.youtube.com/watch?v=fmn-pRvNaho and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 int sendRecieve(string messageSend, string messageDisplay, int stream_client_socket)
 {
   // Send and Recieve

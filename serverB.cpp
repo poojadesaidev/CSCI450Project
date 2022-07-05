@@ -19,6 +19,7 @@ using namespace std;
 #define FILENAME "block2.txt"
 #define SERVERNAME "ServerB"
 
+// REFERENCE : https://thispointer.com/c-how-to-sort-a-list-of-objects-with-custom-comparator-or-lambda-function/
 // create class for creating a sorted list of structs for TXLIST
 struct Transaction
 {
@@ -126,6 +127,7 @@ string decode(string encodedString)
   // cout << s << s.length() << endl;
 }
 
+// REFERENCE : https://www.youtube.com/watch?v=uIanSvWou1M and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 int createBindDatagramSocket()
 {
   int dg_sock;

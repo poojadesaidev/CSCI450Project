@@ -32,6 +32,7 @@
 
 using namespace std;
 
+// REFERENCE : https://thispointer.com/c-how-to-sort-a-list-of-objects-with-custom-comparator-or-lambda-function/
 // create class for creating a sorted list of structs for TXLIST
 struct Transaction
 {
@@ -154,6 +155,7 @@ int writeToFile(list<Transaction> allTransactions)
   return 0;
 }
 
+//REFERENCE : https://www.youtube.com/watch?v=cNdlrbZSkyQ&t=388s and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 int createBindListenStrmSrvrWlcmngSocket()
 {
 
@@ -191,12 +193,14 @@ int createBindListenStrmSrvrWlcmngSocket()
   return stream_welcoming_sock;
 }
 
+//REFERENCE : https://www.youtube.com/watch?v=uIanSvWou1M and and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 int createUDPSocket()
 {
   // create datagram client socket
   return socket(DOMAIN, SOCK_DGRAM, 0);
 }
 
+//REFERENCE : https://www.youtube.com/watch?v=uIanSvWou1M and and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 sockaddr_in createUDPServerAddrHint(int serverNumber)
 {
   // create a hint structure for the server
@@ -219,6 +223,7 @@ sockaddr_in createUDPServerAddrHint(int serverNumber)
   return datagram_server_hint;
 }
 
+//REFERENCE : https://www.youtube.com/watch?v=uIanSvWou1M and and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 sockaddr_in createUDPClientAddrHint()
 {
   // create a hint structure for the server
@@ -231,6 +236,7 @@ sockaddr_in createUDPClientAddrHint()
   return datagram_client_hint;
 }
 
+//REFERENCE : https://www.youtube.com/watch?v=uIanSvWou1M and and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 string sendRequestToDatagramServer(int datagram_client_sock,
                                    sockaddr_in datagram_server_hint,
                                    sockaddr_in datagram_client_hint,
@@ -852,6 +858,7 @@ string getTransactionList()
   return "Something went wrong : did not receive a sorted list of transactions from the main server.";
 }
 
+//REFERENCE : https://www.youtube.com/watch?v=cNdlrbZSkyQ&t=388s and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
 int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client)
 {
   // this is a child process
@@ -916,7 +923,7 @@ int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client)
       sockaddr_in datagram_client_hint_temp;
       datagramServerResponse = getTransactionList();
       // no message mentioned
-      //cout << "The main server generated the transaction list file." << endl;
+      cout << "The main server generated the transaction list file." << endl;
     }
     else
     {
