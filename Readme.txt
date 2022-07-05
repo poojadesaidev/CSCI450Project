@@ -80,15 +80,17 @@ References or reused code:
 
 Assumptions:
 	1)	As mentioned in Makefile, the option ‘-std=c++11’ has to be used while compiling the files.
-	2)	Attempt to transfer an amount less than or equal to zero is not allowed and will be caught in validations. eg: ./client Chinmay Martin -20
-	3)	All names of sender and receivers are case sensitive. Eg: ./client Martin is not the same as ./client martin
-	4)	Main Server Message : The following message is being used consistently:
+  2)  The monitor can only accept one argument and it has to be TXLIST. This validation is done on monitor, no call made to server if input is not TXLIST
+  3)  The client can only accept one or three arguments. This validation is done on client, no call made to server is if argument number is not 1 or 3
+	4)	Attempt to transfer an amount less than or equal to zero is not allowed and will be caught in validations. eg: ./client Chinmay Martin -20
+	5)	All names of sender and receivers are case sensitive. Eg: ./client Martin is not the same as ./client martin
+	6)	Main Server Message : The following message is being used consistently:
   “The main server received transactions from Server <i> using UDP over port <PORT_NUMBER>.”
   
   The following message is not being used:
   “The main server received feedback from Server <i> using UDP over port <PORT_NUMBER>.”                            
   
   As per https://courses.uscden.net/d2l/le/22707/discussions/threads/47370/View, we are allowed to use either
-  5) Main Server Message : The following message is being used ater the Main Server generates TXLIST:
+  7) Main Server Message : The following message is being used ater the Main Server generates TXLIST:
   "The main server generated the transaction list file."
-  6) Error Messages : Error messages are liberally being used for all files in case of RunTime failures.
+  8) Error Messages : Error messages are liberally being used for all files in case of RunTime failures.
