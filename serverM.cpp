@@ -20,7 +20,8 @@
 #include <list>
 #include <fstream>
 
-#define TCPPORT 25112
+#define TCPPORTCLIENT 25112
+#define TCPPORTMONITOR 26112
 #define UDPPORT 24112
 #define DOMAIN PF_INET // TODO change domain to AF_INET for Unix
 #define MAXBUFLEN 4096
@@ -156,7 +157,7 @@ int writeToFile(list<Transaction> allTransactions)
 }
 
 //REFERENCE : https://www.youtube.com/watch?v=cNdlrbZSkyQ&t=388s and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
-int createBindListenStrmSrvrWlcmngSocket()
+int createBindListenStrmSrvrWlcmngSocket(int clientOrMonitor)
 {
 
   // Create Welcoming Socket
@@ -173,7 +174,16 @@ int createBindListenStrmSrvrWlcmngSocket()
   // Bind the socket to the IP/Port
   sockaddr_in stream_hint; // address (IPV4) for welcoming socket
   stream_hint.sin_family = DOMAIN;
-  stream_hint.sin_port = htons(TCPPORT);            // htons to do host to network translation for port#
+
+  if (clientOrMonitor == 1)
+  {
+    stream_hint.sin_port = htons(TCPPORTCLIENT); // htons to do host to network translation for port#
+  }
+  else
+  {
+    stream_hint.sin_port = htons(TCPPORTMONITOR); // htons to do host to network translation for port#
+  }
+
   inet_pton(DOMAIN, IPADDR, &stream_hint.sin_addr); // inet_pton to convert a number in our IP to array of integers
 
   //if ((bind(stream_welcoming_sock, DOMAIN, &stream_hint, sizeof(stream_hint))) == -1)
@@ -859,7 +869,7 @@ string getTransactionList()
 }
 
 //REFERENCE : https://www.youtube.com/watch?v=cNdlrbZSkyQ&t=388s and Beej’s Guide to Network Programming  Using Internet Sockets (2005)
-int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client)
+int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client, int clientOrMonitor)
 {
   // this is a child process
   // Child socket doesnot need the welcoming socket or listener
@@ -913,13 +923,13 @@ int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client)
 
   if (clientInputs.size() == 1)
   {
-    if (clientInputs[0].compare("TXLIST") == 0)
+    if (clientInputs[0].compare("TXLIST") == 0 && clientOrMonitor == 2)
     {
       // List Transactions
 
       // Display request that was recieved
       cout << "The main server received a sorted list request from the monitor using TCP over port "
-           << TCPPORT << "." << endl;
+           << TCPPORTMONITOR << "." << endl;
       sockaddr_in datagram_client_hint_temp;
       datagramServerResponse = getTransactionList();
       // no message mentioned
@@ -933,7 +943,7 @@ int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client)
       cout << "The main server received "
            << "input=\"" + clientInputs[0] + "\" from the client"
            << " using TCP over port "
-           << TCPPORT << "." << endl;
+           << TCPPORTCLIENT << "." << endl;
 
       sockaddr_in datagram_client_hint_temp;
       datagramServerResponse = checkWallet(clientInputs[0], true, 0, datagram_client_hint_temp);
@@ -949,7 +959,7 @@ int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client)
          << "from \"" << clientInputs[0] << "\""
          << " to transfer " << clientInputs[2] << " coins to \"" << clientInputs[1] << "\""
          << " using TCP over port "
-         << TCPPORT << "." << endl;
+         << TCPPORTCLIENT << "." << endl;
     datagramServerResponse = logTransaction(clientInputs[0], clientInputs[1], clientInputs[2]);
     cout << "The main server sent the result of the transaction to the client." << endl;
   }
@@ -985,10 +995,18 @@ int childFork(int stream_welcoming_sock, int childSocket, sockaddr_in client)
 
 int main()
 {
-  // Stream Sock Server (TCP socket server)
-  int stream_welcoming_sock = createBindListenStrmSrvrWlcmngSocket();
+  // Stream Sock Server (TCP socket server) for Client
+  int stream_welcoming_sock = createBindListenStrmSrvrWlcmngSocket(1);
 
   if (stream_welcoming_sock == -1)
+  {
+    return -1;
+  }
+
+  // Stream Sock Server (TCP socket server) for Monitor
+  int stream_monitor_welcoming_sock = createBindListenStrmSrvrWlcmngSocket(2);
+
+  if (stream_monitor_welcoming_sock == -1)
   {
     return -1;
   }
@@ -999,14 +1017,16 @@ int main()
   // client accept loop
   while (1)
   {
-    sockaddr_in client;
-    socklen_t clientSize = sizeof(client);
+
+    // WAIT FOR CLIENT TRANSACTION
+    sockaddr_in client1;
+    socklen_t clientSize1 = sizeof(client1);
 
     // Accept or create child socket
     // pull in a request from incoming request queue and create a child socket to process it
-    int childSocket = accept(stream_welcoming_sock, (sockaddr *)&client, &clientSize);
+    int childSocket1 = accept(stream_welcoming_sock, (sockaddr *)&client1, &clientSize1);
 
-    if (childSocket == -1)
+    if (childSocket1 == -1)
     {
       cerr << "Stream socket could not accept client for ServerM";
       continue;
@@ -1014,15 +1034,62 @@ int main()
 
     if (!fork())
     {
-      childFork(stream_welcoming_sock, childSocket, client);
+      childFork(stream_welcoming_sock, childSocket1, client1, 1);
       exit(0);
     }
 
     // Close child socket as parent does not need it
-    close(childSocket);
+    close(childSocket1);
+
+    // WAIT FOR CLIENT TRANSACTION
+    sockaddr_in client2;
+    socklen_t clientSize2 = sizeof(client2);
+
+    // Accept or create child socket
+    // pull in a request from incoming request queue and create a child socket to process it
+    int childSocket2 = accept(stream_welcoming_sock, (sockaddr *)&client2, &clientSize2);
+
+    if (childSocket2 == -1)
+    {
+      cerr << "Stream socket could not accept client for ServerM";
+      continue;
+    }
+
+    if (!fork())
+    {
+      childFork(stream_welcoming_sock, childSocket2, client2, 1);
+      exit(0);
+    }
+
+    // Close child socket as parent does not need it
+    close(childSocket2);
+
+    // WAIT FOR MONITOR TRANSACTION
+    sockaddr_in client3;
+    socklen_t clientSize3 = sizeof(client3);
+
+    // Accept or create child socket
+    // pull in a request from incoming request queue and create a child socket to process it
+    int childSocket3 = accept(stream_monitor_welcoming_sock, (sockaddr *)&client3, &clientSize3);
+
+    if (childSocket3 == -1)
+    {
+      cerr << "Stream socket could not accept client for ServerM";
+      continue;
+    }
+
+    if (!fork())
+    {
+      childFork(stream_monitor_welcoming_sock, childSocket3, client3, 2);
+      exit(0);
+    }
+
+    // Close child socket as parent does not need it
+    close(childSocket3);
   }
 
-  // Close welcoming socket
+  // Close welcoming sockets
   close(stream_welcoming_sock);
+  close(stream_monitor_welcoming_sock);
   return 0;
 }
