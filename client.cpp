@@ -9,7 +9,7 @@
 
 #define TCPSERVERPORT 25112
 #define IPADDR "127.0.0.1"
-#define DOMAIN PF_INET // TODO change domain to AF_INET for Unix
+#define DOMAIN AF_INET // TODO change domain to AF_INET for Unix
 
 using namespace std;
 

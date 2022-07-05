@@ -13,7 +13,7 @@
 using namespace std;
 
 #define UDPPORT 21112
-#define DOMAIN PF_INET // TODO change domain to AF_INET for Unix
+#define DOMAIN AF_INET // TODO change domain to AF_INET for Unix
 #define MAXBUFLEN 4096
 #define IPADDR "127.0.0.1"
 #define FILENAME "block1.txt"

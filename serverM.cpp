@@ -23,7 +23,7 @@
 #define TCPPORTCLIENT 25112
 #define TCPPORTMONITOR 26112
 #define UDPPORT 24112
-#define DOMAIN PF_INET // TODO change domain to AF_INET for Unix
+#define DOMAIN AF_INET // TODO change domain to AF_INET for Unix
 #define MAXBUFLEN 4096
 #define IPADDR "127.0.0.1"
 #define UDPPORTSERVERA 21112
